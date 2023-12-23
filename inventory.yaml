@@ -1,0 +1,11 @@
+balancers:
+  hosts:
+    nginx_1:
+      ansible_host: 192.168.31.128
+
+web_apps:
+  hosts:
+    http_app_1:
+      ansible_host: 192.168.31.134
+    http_app_2:
+      ansible_host: 192.168.31.66

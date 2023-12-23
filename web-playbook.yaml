@@ -1,0 +1,55 @@
+---
+- name: Checkout sources
+  hosts: web_apps
+  remote_user: dimasik
+
+  tasks:
+  - name: Checkout app
+    ansible.builtin.git:
+      repo: https://github.com/DimaKurd/devops_hw6.git
+      dest: /home/dimasik/web_app
+
+- name: Customize web app 1
+  hosts: http_app_1
+  remote_user: dimasik
+
+  tasks:
+  - name: Customize app1
+    ansible.builtin.copy:
+      src: ./custom1.jpg
+      dest: /home/dimasik/web_app/docker_dir/img/custom.jpg
+
+- name: Customize web app 2
+  hosts: http_app_2
+  remote_user: dimasik
+
+  tasks:
+  - name: Customize app2
+    ansible.builtin.copy:
+      src: ./custom2.jpg
+      dest: /home/dimasik/web_app/docker_dir/img/custom.jpg
+
+
+- name: Docker build and run
+  hosts: web_apps
+  remote_user: dimasik
+
+  tasks:
+  - name: Build docker image
+    community.docker.docker_image:
+      build:
+        path: /home/dimasik/web_app/docker_dir
+        nocache: true
+      name: web_app_image
+      tag: last
+      source: build
+      force_source: true
+
+  - name: Create app container
+    community.docker.docker_container:
+      name: web_app_container
+      image: web_app_image:last
+      recreate: true
+      ports:
+        - "80:8000"
+
